@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="get_entry_code">1</integer>
+    <integer name="get_update_code">2</integer>
+    <integer name="camera_request_code">3</integer>
+    <integer name="read_external_code">4</integer>
+</resources>

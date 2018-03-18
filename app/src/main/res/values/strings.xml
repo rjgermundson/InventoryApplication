@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">InventoryApplication</string>
+    <string name="add_entry">Add Entry</string>
+    <string name="search_products">Search Product by Name</string>
+    <string name="search_products_barcode">Search by Barcode</string>
+    <string name="import_file">Import Document</string>
+    <string name="scan">Scan</string>
+    <string name="barcode">Barcode ID</string>
+    <string name="brand">Brand:</string>
+    <string name="brand_sample">e.g. Red Mill, Odwalla, etc.</string>
+    <string name="product">Product:</string>
+    <string name="product_sample">e.g. Granola, Chips, etc.</string>
+    <string name="save">Save</string>
+    <string name="number_products_found">Products Found</string>
+</resources>
