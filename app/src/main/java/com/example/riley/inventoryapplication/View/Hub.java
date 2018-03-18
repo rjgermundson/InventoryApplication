@@ -51,7 +51,10 @@ public class Hub extends AppCompatActivity implements NavigationView.OnNavigatio
         } else if (item.getItemId() == R.id.nav_search) {
             Intent intent = new Intent(getApplicationContext(), SearchScreen.class);
             startActivity(intent);
-        } else if (item.getItemId() == R.id.nav_settings) {
+        } else if (item.getItemId() == R.id.nav_import) {
+            Intent intent = new Intent(getApplicationContext(), ImportPage.class);
+            startActivity(intent);
+        }else if (item.getItemId() == R.id.nav_settings) {
             System.err.println("SETTINGS");
         }
         drawerLayout.closeDrawer(GravityCompat.START);
