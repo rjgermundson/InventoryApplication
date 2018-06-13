@@ -9,4 +9,38 @@
         android:layout_height="wrap_content"
         android:text="Import Document" />
 
+    <TableLayout
+        android:id="@+id/pbspinner"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40sp"
+            android:layout_weight="0.1"
+            android:text="Please wait a few seconds..."
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textColor="@color/black"
+            android:textSize="24sp" />
+
+        <ProgressBar
+            android:layout_weight="0.6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.4"
+            android:text="Importing..."
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            android:textColor="@color/black"
+            android:textSize="24sp" />
+
+    </TableLayout>
+
 </LinearLayout>

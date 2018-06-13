@@ -1,13 +1,19 @@
 package com.example.riley.inventoryapplication.View;
 
 import android.Manifest;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TableLayout;
 
 import com.example.riley.inventoryapplication.Model.ProductProfile;
 import com.example.riley.inventoryapplication.Model.SQLiteHelper;
@@ -15,6 +21,7 @@ import com.example.riley.inventoryapplication.R;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -29,7 +36,7 @@ import java.util.concurrent.RecursiveAction;
 public class ImportPage extends AppCompatActivity {
     private static final ForkJoinPool POOL = new ForkJoinPool();
     private static final int EXTRA_ELEMENTS = 7;
-    private static final int SEQUENTIAL_CUTOFF = 10;
+    private static final int SEQUENTIAL_CUTOFF = 100;
 
     private SQLiteHelper sqLiteHelper;
 
@@ -56,10 +63,7 @@ public class ImportPage extends AppCompatActivity {
 
         @Override
         public void onClick(View view) {
-            List<String> rawProducts = getRawData(getPriceBook());
-            ImportTask task = new ImportTask(rawProducts, 0, rawProducts.size());
-            POOL.invoke(task);
-            System.err.println("HELLO");
+            new ProgressTask(getApplicationContext()).execute();
         }
 
         /**
@@ -212,6 +216,46 @@ public class ImportPage extends AppCompatActivity {
             }
 
 
+
+        }
+
+        private class ProgressTask extends AsyncTask<Void, Void, Void> {
+            private TableLayout importProgressSpinner;
+            private Context context;
+
+            public ProgressTask(Context context) {
+                this.context = context;
+            }
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                importProgressSpinner = findViewById(R.id.pbspinner);
+                importProgressSpinner.setVisibility(TableLayout.VISIBLE);
+                getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                                     WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+            }
+
+            @Override
+            protected Void doInBackground(Void... p) {
+                List<String> rawProducts = getRawData(getPriceBook());
+                ImportTask task = new ImportTask(rawProducts, 0, rawProducts.size());
+                POOL.invoke(task);
+                task.join();
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void res) {
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                if (this.isCancelled()) {
+                    res = null;
+                    return;
+                }
+                if (importProgressSpinner != null) {
+                    importProgressSpinner.setVisibility(TableLayout.INVISIBLE);
+                }
+            }
 
         }
 
