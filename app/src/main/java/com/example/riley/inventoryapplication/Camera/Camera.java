@@ -90,11 +90,13 @@ public class Camera extends AppCompatActivity {
 
         @Override
         public void onDisconnected(@NonNull CameraDevice cameraDevice) {
+            camera = cameraDevice;
             closeCamera();
         }
 
         @Override
         public void onError(@NonNull CameraDevice cameraDevice, int i) {
+            camera = cameraDevice;
             closeCamera();
         }
     };
@@ -239,6 +241,8 @@ public class Camera extends AppCompatActivity {
         backgroundHandlerThread.quitSafely();
         try {
             backgroundHandlerThread.join();
+            backgroundHandlerThread = null;
+            backgroundHandler = null;
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -260,9 +264,9 @@ public class Camera extends AppCompatActivity {
 
     @Override
     public void onPause() {
+        imgReader.close();
         closeCamera();
         stopBackgroundThread();
-        imgReader.close();
         super.onPause();
     }
 

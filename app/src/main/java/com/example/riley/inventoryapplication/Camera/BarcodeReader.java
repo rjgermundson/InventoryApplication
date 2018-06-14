@@ -70,7 +70,6 @@ public class BarcodeReader {
     private void checkDetect(Frame frame) {
         SparseArray<Barcode> code = barcodeDetector.detect(frame);
         if (code != null && code.size() > 0 && code != currBarcode) {
-            System.err.println("HSJFSDJF:LSDJ:FSDLKJFLD");
             currBarcode = code;
             String stringCurrBarcode = currBarcode.valueAt(0).rawValue;
             callback.onDetect(stringCurrBarcode);
