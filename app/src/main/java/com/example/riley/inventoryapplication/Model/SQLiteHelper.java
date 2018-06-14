@@ -116,9 +116,18 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public ArrayList<ProductProfile> search(String query) {
         SQLiteDatabase database = getReadableDatabase();
         ArrayList<ProductProfile> products = new ArrayList<>();
-        Cursor cursor = database.query(TABLE_NAME, null, COLUMN_PRODUCT + " LIKE \"%" + query + "%\" OR " + COLUMN_BRAND + " LIKE \"%" + query + "%\"", null, null, null, COLUMN_BRAND, "100");
+        String[] tokens = query.split(" ");
+        String plike = "";
+        String blike = "";
+        for (int i = 0; i < tokens.length - 1; i++) {
+            plike = COLUMN_PRODUCT + " LIKE \"%" + tokens[i] + "%\" OR ";
+            blike = COLUMN_BRAND + " LIKE \"%" + tokens[i] + "%\" OR ";
+        }
+        plike += COLUMN_PRODUCT + " LIKE \"%" + tokens[tokens.length - 1] + "%\"";
+        blike += COLUMN_BRAND + " LIKE \"%" + tokens[tokens.length - 1] + "%\"";
+        Cursor cursor = database.query(TABLE_NAME, null, plike + " OR " + blike, null, null, null, COLUMN_BRAND, null);
         ProductProfile currProfile;
-        for (int index = 0; index < cursor.getCount(); index++) {
+        for (int index = 0; index < cursor.getCount() && index < 100; index++) {
             cursor.moveToNext();
             currProfile = new ProductProfile(cursor.getString(0), cursor.getString(1), cursor.getString(2));
             products.add(currProfile);

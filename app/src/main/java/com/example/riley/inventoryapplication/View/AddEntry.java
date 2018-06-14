@@ -49,7 +49,7 @@ public class AddEntry extends AppCompatActivity {
                     if (getIntent().getExtras() != null && getIntent().getExtras().containsKey("update") && getIntent().getExtras().getBoolean("update")) {
                         // If we are updating we want to return to the search menu
                         sqLiteHelper.updateRecord(currProductProfile);
-                        intent = new Intent(getApplicationContext(), Camera.class);
+                        intent = new Intent(getApplicationContext(), SearchScreen.class);
                         finish();
                     } else {
                         // Otherwise we return to the main activity menu
@@ -57,6 +57,8 @@ public class AddEntry extends AppCompatActivity {
                         sqLiteHelper.insertRecord(currProductProfile);
                         intent = new Intent(getApplicationContext(), Hub.class);
                     }
+                } else {
+                    intent = new Intent(getApplicationContext(), Hub.class);
                 }
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 sqLiteHelper.closeDatabase();

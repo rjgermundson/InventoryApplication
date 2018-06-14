@@ -42,6 +42,7 @@ public class Camera extends AppCompatActivity {
     private SQLiteHelper sqLiteHelper;
     private TextureView textureView;
     private CameraDevice camera;
+    private CameraCaptureSession cameraSession;
     private String cameraId;
     private Size previewSize;
     private CaptureRequest.Builder captureRequestBuilder;
@@ -175,6 +176,7 @@ public class Camera extends AppCompatActivity {
                         @Override
                         public void onConfigured(CameraCaptureSession session) {
                             try {
+                                cameraSession = session;
                                 session.setRepeatingRequest(captureRequestBuilder.build(),
                                         null, backgroundHandler);
                             } catch (CameraAccessException e) {
@@ -264,9 +266,14 @@ public class Camera extends AppCompatActivity {
 
     @Override
     public void onPause() {
-        imgReader.close();
-        closeCamera();
+        try {
+            cameraSession.abortCaptures();
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
         stopBackgroundThread();
+        closeCamera();
+        imgReader.close();
         super.onPause();
     }
 

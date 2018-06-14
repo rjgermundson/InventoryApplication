@@ -18,17 +18,6 @@
 
     </SearchView>
 
-    <TextView
-        android:id="@+id/products_found"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
-        android:layout_marginBottom="32dp"
-        app:layout_constraintBottom_toBottomOf="parent" />
-
 
     <ScrollView
         android:id="@+id/scroll_view"
@@ -38,7 +27,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/search_bar"
-        app:layout_constraintBottom_toTopOf="@+id/products_found"
+        app:layout_constraintBottom_toTopOf="@+id/controls"
         >
 
         <LinearLayout
@@ -63,4 +52,43 @@
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/controls"
+        android:textAlignment="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Left"
+            android:layout_margin="10sp"/>
+
+        <TextView
+            android:layout_weight="1"
+            android:id="@+id/products_found"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintHorizontal_bias="0.501"
+            android:layout_margin="10dp"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Right"
+            android:layout_margin="10sp"/>
+
+
+    </LinearLayout>
+
 </android.support.constraint.ConstraintLayout>

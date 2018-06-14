@@ -1,7 +1,6 @@
 package com.example.riley.inventoryapplication.View;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
@@ -12,7 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.TableLayout;
 
 import com.example.riley.inventoryapplication.Model.ProductProfile;
@@ -21,7 +19,6 @@ import com.example.riley.inventoryapplication.R;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -98,6 +95,50 @@ public class ImportPage extends AppCompatActivity {
             }
             requestPermissions(new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, getResources().getInteger(R.integer.read_external_code));
             return new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "Pricebook.txt");
+        }
+
+
+        /*
+         * Async task meant to show loading bar as well as start
+         * the recursive task meant to import data in folder
+         */
+        private class ProgressTask extends AsyncTask<Void, Void, Void> {
+            private TableLayout importProgressSpinner;
+            private Context context;
+
+            private ProgressTask(Context context) {
+                this.context = context;
+            }
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                importProgressSpinner = findViewById(R.id.pbspinner);
+                importProgressSpinner.setVisibility(TableLayout.VISIBLE);
+                getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+            }
+
+            @Override
+            protected Void doInBackground(Void... p) {
+                List<String> rawProducts = getRawData(getPriceBook());
+                ImportTask task = new ImportTask(rawProducts, 0, rawProducts.size());
+                POOL.invoke(task);
+                task.join();
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void res) {
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                if (this.isCancelled()) {
+                    return;
+                }
+                if (importProgressSpinner != null) {
+                    importProgressSpinner.setVisibility(TableLayout.INVISIBLE);
+                }
+            }
+
         }
 
         /**
@@ -218,47 +259,6 @@ public class ImportPage extends AppCompatActivity {
 
 
         }
-
-        private class ProgressTask extends AsyncTask<Void, Void, Void> {
-            private TableLayout importProgressSpinner;
-            private Context context;
-
-            public ProgressTask(Context context) {
-                this.context = context;
-            }
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                importProgressSpinner = findViewById(R.id.pbspinner);
-                importProgressSpinner.setVisibility(TableLayout.VISIBLE);
-                getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                                     WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-            }
-
-            @Override
-            protected Void doInBackground(Void... p) {
-                List<String> rawProducts = getRawData(getPriceBook());
-                ImportTask task = new ImportTask(rawProducts, 0, rawProducts.size());
-                POOL.invoke(task);
-                task.join();
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void res) {
-                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                if (this.isCancelled()) {
-                    res = null;
-                    return;
-                }
-                if (importProgressSpinner != null) {
-                    importProgressSpinner.setVisibility(TableLayout.INVISIBLE);
-                }
-            }
-
-        }
-
     }
 
 
