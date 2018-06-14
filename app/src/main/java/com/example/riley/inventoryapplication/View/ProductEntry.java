@@ -49,20 +49,13 @@ public class ProductEntry extends AppCompatActivity {
         barcode = getIntent().getStringExtra("barcode");
         brand = getIntent().getStringExtra("brand");
         product = getIntent().getStringExtra("product");
-        char firstDigit = ' ';
-        if (barcode.length() == 13) {
-            firstDigit = barcode.charAt(0);
-            barcode = barcode.substring(1);
-        }
-        setTextViews(firstDigit);
+        setTextViews();
     }
 
     /**
      * Sets the text fields of the entry page
-     *
-     * @param barcodeFirstDigit The first digit of the barcode
      */
-    private void setTextViews(char barcodeFirstDigit) {
+    private void setTextViews() {
         TextView tvBarcodeText = findViewById(R.id.tvBarcode);
         TextView firstDigit = findViewById(R.id.firstDigit);
         TextView leftHalfDigits = findViewById(R.id.leftHalfDigits);
@@ -70,15 +63,18 @@ public class ProductEntry extends AppCompatActivity {
         TextView lastDigit = findViewById(R.id.lastDigit);
         TextView brandTextView = findViewById(R.id.tvBrand);
         TextView productTextView = findViewById(R.id.tvProduct);
-        if (barcodeFirstDigit == ' ') {
-            firstDigit.setText(barcode.substring(0,1));
+        firstDigit.setText(barcode.substring(0, 1));
+        if (barcode.length() != 13) {
+            // UPC-A
             leftHalfDigits.setText(barcode.substring(1, 6));
+            rightHalfDigits.setText(barcode.substring(6, 11));
+            lastDigit.setText(barcode.substring(11));
         } else {
-            firstDigit.setText(barcodeFirstDigit);
-            leftHalfDigits.setText(barcode.substring(0, 6));
+            // EAN
+            leftHalfDigits.setText(barcode.substring(1, 7));
+            rightHalfDigits.setText(barcode.substring(7));
+            lastDigit.setText("");
         }
-        rightHalfDigits.setText(barcode.substring(6, 11));
-        lastDigit.setText(barcode.substring(11));
         tvBarcodeText.setText(barcode);
         brandTextView.setText(brand);
         productTextView.setText(product);
