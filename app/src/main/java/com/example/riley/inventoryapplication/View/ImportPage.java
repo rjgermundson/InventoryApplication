@@ -60,7 +60,7 @@ public class ImportPage extends AppCompatActivity {
 
         @Override
         public void onClick(View view) {
-            new ProgressTask(getApplicationContext()).execute();
+            new ProgressTask().execute();
         }
 
         /**
@@ -104,11 +104,8 @@ public class ImportPage extends AppCompatActivity {
          */
         private class ProgressTask extends AsyncTask<Void, Void, Void> {
             private TableLayout importProgressSpinner;
-            private Context context;
 
-            private ProgressTask(Context context) {
-                this.context = context;
-            }
+            private ProgressTask() { }
 
             @Override
             protected void onPreExecute() {

@@ -127,7 +127,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         blike += COLUMN_BRAND + " LIKE \"%" + tokens[tokens.length - 1] + "%\"";
         Cursor cursor = database.query(TABLE_NAME, null, plike + " OR " + blike, null, null, null, COLUMN_BRAND, null);
         ProductProfile currProfile;
-        for (int index = 0; index < cursor.getCount() && index < 100; index++) {
+        for (int index = 0; index < cursor.getCount(); index++) {
             cursor.moveToNext();
             currProfile = new ProductProfile(cursor.getString(0), cursor.getString(1), cursor.getString(2));
             products.add(currProfile);

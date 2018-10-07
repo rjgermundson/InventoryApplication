@@ -4,12 +4,11 @@ package com.example.riley.inventoryapplication.View;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -20,6 +19,7 @@ import com.example.riley.inventoryapplication.R;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -30,8 +30,9 @@ public class SearchScreen extends AppCompatActivity {
     private String currQuery;
     private String updateRowID;
     private TextView numberOfProducts;
-    private int numberProducts;
+    private List<ProductProfile> productsFound = new ArrayList<>();
     private Queue<ProductProfile> currentProducts = new LinkedBlockingQueue<>();
+    private int page = 0;
 
     @Override
     public void onCreate(Bundle savedInstance) {
@@ -40,6 +41,26 @@ public class SearchScreen extends AppCompatActivity {
         sqLiteHelper = new SQLiteHelper(getApplicationContext());
         alertDialogBuilder= new AlertDialog.Builder(SearchScreen.this);
         numberOfProducts = findViewById(R.id.products_found);
+        Button left = findViewById(R.id.left_page_button);
+        left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (page > 0) {
+                    page--;
+                    displaySearch();
+                }
+            }
+        });
+        Button right = findViewById(R.id.right_page_button);
+        right.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (page * 100 + 100 < productsFound.size()) {
+                    page++;
+                    displaySearch();
+                }
+            }
+        });
         setupSearchListener();
     }
 
@@ -50,11 +71,12 @@ public class SearchScreen extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 currSearchView.clearFocus();
+                page = 0;
                 currQuery = query;
-                ArrayList<ProductProfile> productsFound = sqLiteHelper.search(query);
-                numberProducts = productsFound.size();
+                productsFound = sqLiteHelper.search(query);
+                productsFound.size();
                 setNumber();
-                displaySearch(productsFound);
+                displaySearch();
                 return false;
             }
             @Override
@@ -65,9 +87,17 @@ public class SearchScreen extends AppCompatActivity {
     }
 
     // Display the products that match the string or contain the string in the product or brand name
-    private void displaySearch(ArrayList<ProductProfile> productsFound) {
+    private void displaySearch() {
         ((LinearLayout) findViewById(R.id.leftoverLayout)).removeAllViews();
-        currentProducts.addAll(productsFound);
+        currentProducts.clear();
+        int last = page * 100 + 100;
+        if (last > productsFound.size()) {
+            last = productsFound.size();
+        }
+        System.err.println(page * 100 + " : " + last);
+        List<ProductProfile> currPage = productsFound.subList(page * 100, last);
+        currentProducts.addAll(currPage);
+        System.err.println(currentProducts.size());
         runOnUiThread(new ViewCreator());
     }
 
@@ -108,17 +138,6 @@ public class SearchScreen extends AppCompatActivity {
     // Set the functionality of each view holder. To change color on whether the user is touching the entry. Also
     // sets up the update and delete alert
     private void setupInflateListeners(final View currView, final ViewHolder someViewHolder, LinearLayout inflateParentView) {
-        inflateParentView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                    someViewHolder.textView.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.lightGray)); // Change color to show input on the current entry
-                } else /*if (motionEvent.getAction() == MotionEvent.ACTION_UP)*/ {
-                    someViewHolder.textView.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.superLightGray));
-                }
-                return false;
-            }
-        });
 
         final CharSequence[] options = {"Update", "Delete"};
         inflateParentView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -138,9 +157,9 @@ public class SearchScreen extends AppCompatActivity {
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     ProductProfile profile = new ProductProfile(someViewHolder.barcode, someViewHolder.brand, someViewHolder.product);
                                     sqLiteHelper.deleteRecord(profile);
-                                    numberProducts--;
                                     setNumber();
-                                    displaySearch(sqLiteHelper.search(currQuery));
+                                    productsFound = sqLiteHelper.search(currQuery);
+                                    displaySearch();
                                 }
                             });
 
@@ -196,10 +215,10 @@ public class SearchScreen extends AppCompatActivity {
     }
 
     private void setNumber() {
-        if (numberProducts == 1) {
-            numberOfProducts.setText(numberProducts + " Product Found");
+        if (productsFound.size() == 1) {
+            numberOfProducts.setText(productsFound.size() + " Product Found");
         } else {
-            numberOfProducts.setText(numberProducts + " Products Found");
+            numberOfProducts.setText(productsFound.size() + " Products Found");
         }
     }
 }
